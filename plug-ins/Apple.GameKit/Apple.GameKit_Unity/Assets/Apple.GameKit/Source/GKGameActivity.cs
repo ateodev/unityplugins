@@ -32,10 +32,14 @@ namespace Apple.GameKit
 
         static GKGameActivity()
         {
+#if UNITY_EDITOR && !UNITY_EDITOR_OSX
+            // ATEO: The availability check reads the runtime through AppleCoreNativeMac, which ships for macOS and Apple devices only, so on an editor on any other host it would throw from this type initializer at every play mode start and leave the type unusable. No Apple API is available there, so no callback is registered.
+#else
             if (Availability.IsTypeAvailable<GKGameActivity>())
             {
                 Interop.GKGameActivity_SetWantsToPlayCallback(OnWantsToPlay);
             }
+#endif
         }
 
 #if IOS_19_BETA_1_WANTSTOPLAY_MAIN_THREAD_WORKAROUND

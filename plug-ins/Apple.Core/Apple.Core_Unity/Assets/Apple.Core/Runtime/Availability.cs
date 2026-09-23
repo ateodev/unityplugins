@@ -203,9 +203,14 @@ namespace Apple.Core
         {
             Debug.Log("[Apple.Core Plug-In Runtime] Initializing API Availability Checking");
 
+#if UNITY_EDITOR && !UNITY_EDITOR_OSX
+            // ATEO: RuntimeEnvironment is read through AppleCoreNativeMac, which ships for macOS and Apple devices only, so an editor on any other host can never load it. The start line says why the environment is not read instead of logging a DllNotFoundException at every play mode start.
+            Debug.Log("[Apple.Core Plug-In Runtime] Availability Runtime Environment is not read in this editor, since the plug-in's native library exists only for macOS and Apple devices");
+#else
             var env = RuntimeEnvironment;
 
             Debug.Log($"[Apple.Core Plug-In Runtime] Availability Runtime Environment: {env.RuntimeOperatingSystem.ToString()} {env.VersionNumber.Major}.{env.VersionNumber.Minor}");
+#endif
         }
         #endregion
     }
