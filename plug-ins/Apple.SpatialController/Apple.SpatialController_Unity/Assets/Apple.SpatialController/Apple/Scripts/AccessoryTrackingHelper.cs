@@ -1,17 +1,12 @@
 using UnityEngine;
-using Unity.Mathematics;
-using System;
 using AOT;
 using System.Collections.Generic;
 using UnityEngine.Events;
-using Unity.VisualScripting;
-using UnityEngine.UI;
 using TMPro;
 
 namespace Apple.visionOS.AccessoryTracking
 {
     using SpatialController;
-    using Unity.PolySpatial;
 
     public class AccessoryTrackingHelper : MonoBehaviour
     {
@@ -50,13 +45,9 @@ namespace Apple.visionOS.AccessoryTracking
         [SerializeField] private LocationOption RightLocation = LocationOption.origin;
         public TMP_Text RightControllerText;
 
-
         [Header("Controller Events")]
         public UnityEvent<string> ControllerConnectedEvent;
         public UnityEvent<string> ControllerDisconnectedEvent;
-        
-        [Header("A Reference To The Volume Camera")]
-        public GameObject _volumeCamera;
 
         /// <summary>
         /// An array of accessories that have been polled
@@ -119,27 +110,6 @@ namespace Apple.visionOS.AccessoryTracking
                 worldOriginAxis.transform.position = new Vector3(0, 0, 0);
             }
 
-            /// find the Volume Camera in the scene
-            _volumeCamera = GameObject.Find("VolumeCamera");
-            //confirm the volume camera object we found is not null
-            if (_volumeCamera != null)
-            {
-                //confirm we have the correct object and script
-                var volumeCameraScript = GetComponent<VolumeCamera>();
-                if (volumeCameraScript != null)
-                {
-                    //find a reference to the volume camera so we can make sure we aren't in bounded
-                    //bounded is not supported at this moment
-                    if (volumeCameraScript.WindowConfiguration.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Bounded)
-                    {
-                        Debug.LogWarning("Apple - Accessory Tracking Plugin does not support Bounded: " + volumeCameraScript.WindowConfiguration.Mode.ToString());
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning("Apple - Accessory Tracking Plugin unable to determine what mode app is in. Bounded not supported.");
-                }
-            }
         }
 
         void OnDisable()
@@ -191,7 +161,7 @@ namespace Apple.visionOS.AccessoryTracking
                                 SpatialControllerUtils.ApplyAccessoryAnchorTransform(LeftController, accessoryAnchor);
                             }
                         }
-                        else if (hand == AccessoryChirality.Right)
+                        else
                         {
                             var location = toLocationName(RightLocation);
                             if (location.HasValue)
@@ -213,26 +183,24 @@ namespace Apple.visionOS.AccessoryTracking
                 /// A list of all the button presses
                 ///
 
-                var isLeftController = state.accessory.inherentChirality;
-
-                //float from 0 or 1
-                var buttonAValue = input.buttons[ControllerInputName.ButtonA].value;
-                var buttonBValue = input.buttons[ControllerInputName.ButtonB].value;
-                var menuButton = input.buttons[ControllerInputName.ButtonMenu].value;
-                var gripButton = input.buttons[ControllerInputName.ButtonGrip].value;
-                var thumbStickButton = input.buttons[ControllerInputName.ButtonThumbstick].value;
-
-                //trigger - float from 0 to 1
-                var triggerButton = input.buttons[ControllerInputName.ButtonTrigger].value;
-
-                // float from -1 to 1
-                var thumbStickX = input.dpads[ControllerInputName.DPadThumbstick].xAxis;
-                var thumbStickY = input.dpads[ControllerInputName.DPadThumbstick].yAxis;
-
                 bool anyButtonPressed = false;
                 if (SpatialControllerUtils.IsLeftController(state.accessory))
                 {
-                    //this is the left controller
+                    // Left PSVR2 controller
+                    // digital - float from 0 or 1
+                    var buttonAValue = input.buttons[ControllerInputName.ButtonA].value;
+                    var buttonBValue = input.buttons[ControllerInputName.ButtonB].value;
+                    var menuButton = input.buttons[ControllerInputName.ButtonMenu].value;
+                    var gripButton = input.buttons[ControllerInputName.ButtonGrip].value;
+                    var thumbStickButton = input.buttons[ControllerInputName.ButtonThumbstick].value;
+
+                    // analog - float from 0 to 1
+                    var triggerButton = input.buttons[ControllerInputName.ButtonTrigger].value;
+
+                    // analog direction - float from -1 to 1
+                    var thumbStickX = input.dpads[ControllerInputName.DPadThumbstick].xAxis;
+                    var thumbStickY = input.dpads[ControllerInputName.DPadThumbstick].yAxis;
+
                     string buttonsText = "";
                     if (buttonAValue != 0)
                     {
@@ -320,7 +288,21 @@ namespace Apple.visionOS.AccessoryTracking
                 }
                 else if (SpatialControllerUtils.IsRightController(state.accessory))
                 {
-                    //this is the right controller
+                    // Right PSVR2 controller
+                    // digital - float from 0 or 1
+                    var buttonAValue = input.buttons[ControllerInputName.ButtonA].value;
+                    var buttonBValue = input.buttons[ControllerInputName.ButtonB].value;
+                    var menuButton = input.buttons[ControllerInputName.ButtonMenu].value;
+                    var gripButton = input.buttons[ControllerInputName.ButtonGrip].value;
+                    var thumbStickButton = input.buttons[ControllerInputName.ButtonThumbstick].value;
+
+                    // analog - float from 0 to 1
+                    var triggerButton = input.buttons[ControllerInputName.ButtonTrigger].value;
+
+                    // analog direction - float from -1 to 1
+                    var thumbStickX = input.dpads[ControllerInputName.DPadThumbstick].xAxis;
+                    var thumbStickY = input.dpads[ControllerInputName.DPadThumbstick].yAxis;
+
                     string buttonsText = "";
                     if (buttonAValue != 0)
                     {
@@ -394,6 +376,61 @@ namespace Apple.visionOS.AccessoryTracking
                         if (ShowDebugLogs)
                         {
                             Debug.Log("R3 Press Event: " + thumbStickButton);
+                        }
+                    }
+                    else
+                    {
+                        buttonsText += "  ";
+                    }
+                    if (!anyButtonPressed)
+                    {
+                        buttonsText = "Press Any Button";
+                    }
+                    RightControllerText.text = buttonsText;
+                }
+                else if (SpatialControllerUtils.IsStylus(state.accessory))
+                {
+                    //digital - float from 0 or 1
+                    var primaryValue = input.buttons[ControllerInputName.ButtonStylusPrimary].value;
+                    //analog - float from 0 to 1
+                    var secondaryValue = input.buttons[ControllerInputName.ButtonStylusSecondary].value;
+                    var tipValue = input.buttons[ControllerInputName.ButtonStylusTip].value;
+
+                    //this is the right controller
+                    string buttonsText = "";
+                    if (primaryValue != 0)
+                    {
+                        buttonsText += "S1";
+                        anyButtonPressed = true;
+                        if (ShowDebugLogs)
+                        {
+                            Debug.Log("Stylus Primary Button Press Event: " + primaryValue);
+                        }
+                    }
+                    else
+                    {
+                        buttonsText += "  ";
+                    }
+                    if (secondaryValue != 0)
+                    {
+                        buttonsText += "S2:" + secondaryValue.ToString("F2");
+                        anyButtonPressed = true;
+                        if (ShowDebugLogs)
+                        {
+                            Debug.Log("Stylus Secondary Button Press Event: " + secondaryValue);
+                        }
+                    }
+                    else
+                    {
+                        buttonsText += "  ";
+                    }
+                    if (tipValue != 0)
+                    {
+                        buttonsText += "S3:" + tipValue.ToString("F2");
+                        anyButtonPressed = true;
+                        if (ShowDebugLogs)
+                        {
+                            Debug.Log("Stylus Tip Button Press Event: " + tipValue);
                         }
                     }
                     else
