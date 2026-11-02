@@ -1,6 +1,12 @@
 # CHANGELOG
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2026-11-02
+### Added
+- Release and Debug native libraries for the iOS simulator (`iPhoneSimulator`) and the tvOS simulator
+  (`AppleTVSimulator`), built by Ateo, so a game using the plug-in builds and runs in the iPhone, iPad and
+  Apple TV simulators. The code is 1.3.2's, depending on `com.apple.unityplugin.core` 3.3.1.
+
 ## [1.3.2] - 2026-09-16
 ### Changed
 - Updated the asset picker and Ricochet sample for APIs deprecated in Unity 6 (`HierarchyProperty`,

@@ -1,6 +1,12 @@
 # CHANGELOG
 All notable changes to this project will be documented in this file.
 
+## [4.1.1] - 2026-11-02
+### Added
+- Release and Debug native libraries for the iOS simulator (`iPhoneSimulator`) and the tvOS simulator
+  (`AppleTVSimulator`), built by Ateo, so a game using the plug-in builds and runs in the iPhone, iPad and
+  Apple TV simulators. The code is 4.1.0's, depending on `com.apple.unityplugin.core` 3.3.1.
+
 ## [4.1.0] - 2026-09-16
 ### Added
 - `GKGameCenterViewController`.

@@ -1,6 +1,12 @@
 # CHANGELOG
 All notable changes to this project will be documented in this file.
 
+## [1.2.6] - 2026-11-02
+### Added
+- Release and Debug native libraries for the iOS simulator (`iPhoneSimulator`) and the tvOS simulator
+  (`AppleTVSimulator`), built by Ateo, so a game using the plug-in builds and runs in the iPhone, iPad and
+  Apple TV simulators. The code is 1.2.5's, depending on `com.apple.unityplugin.core` 3.3.1.
+
 ## [1.2.5] - 2026-09-16
 ### Changed
 - Updated the native project for Xcode 27 and raised its deployment targets to iOS 15.0, tvOS 15.0,
