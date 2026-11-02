@@ -4,8 +4,7 @@ This branch is Apple's Unity plug-ins (`https://github.com/apple/unityplugins`, 
 Apple's `main` at `2c7d520b`, which Ateo builds and publishes as the `com.apple.unityplugin` packages on its
 registry `https://upm.ateo.dev`. Every change the branch carries against that commit is listed below, one entry
 each: what it does and why, where it lives and its commit, its upstream issue or pull request, and when it is
-dropped. A change not listed here is not carried, apart from this file itself. The packages keep Apple's own
-versions, so no version change is carried.
+dropped. A change not listed here is not carried, apart from this file itself.
 
 Every merge of a newer Apple `main` walks this list. An entry is kept when the merged code still needs it, and
 dropped when Apple fixed the same thing in its own way and that fix is good. The list is then brought in line
@@ -65,3 +64,15 @@ which is never rewritten.
    open. A spot is dropped when Apple's own code no longer calls a native library there in an editor on a host
    the library does not ship for, and the change is gone when play mode in a Windows editor logs none of the
    four errors without it.
+3. **The packages carry Apple's next patch number, with the iOS and tvOS simulator libraries.** Apple's build
+   script skips `iPhoneSimulator` and `AppleTVSimulator` unless they are named, so Apple's 3.3.0 set carried no
+   library for either, and a game using the plug-ins failed to link for the iPhone, iPad and Apple TV
+   simulators. Ateo builds them by name, and since the registry cannot take a version twice and Apple had cut
+   no release since 3.3.0, the six packages were raised one patch: Core 3.3.1, Accessibility 1.2.1,
+   CoreHaptics 1.3.3, GameController 1.2.6, GameKit 4.1.1 and PHASE 1.2.9. Each package's `package.json`, its
+   native project's `CURRENT_PROJECT_VERSION` in the `Native/*.xcconfig` beside it and its `CHANGELOG.md` carry
+   the new number, and the five packages that depend on Core name 3.3.1. The code is otherwise Apple's. The
+   commit is "The six packages take Apple's next patch, carrying the iOS and tvOS simulator libraries",
+   `397f5aa`. There is no upstream issue or pull request, since Apple skips those simulators on purpose. It is
+   dropped at the next update taken from Apple, whose own numbers then replace these; if Apple ships one of
+   these numbers itself, that update is renumbered rather than published under Apple's.
